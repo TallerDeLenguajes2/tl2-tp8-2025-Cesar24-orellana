@@ -6,7 +6,7 @@ public class ProductoRepository{
 
 
     
-    public void CreaProducto(Productos producto){
+    public void Create(Productos producto){
         string query = $"INSERT INTO Productos (Descripcion, Precio) VALUE ({producto.Descripcion}, {producto.Precio})";
         using(var Conexion = new SqliteConnection(cadenaConexion))
         {
@@ -16,7 +16,7 @@ public class ProductoRepository{
             Conexion.Close();
         }
     }
-    public void ModificarProducto(int IdProducto, Productos producto){
+    public void Update(int IdProducto, Productos producto){
         using var Conexion = new SqliteConnection(cadenaConexion);
         string query = $"UPDATE Productos SET Descripcion = {producto.Descripcion}, Precio = {producto.Precio} WHERE = idProducto = {IdProducto}";
         Conexion.Open();
@@ -44,10 +44,10 @@ public class ProductoRepository{
         Conexion.Close();
         return productos;
     }
-    public Productos DetallesProducto(int IdProducto){
+    public Productos Detalle(int Id){
         var producto = new Productos();
         using var Conexion = new SqliteConnection(cadenaConexion);
-        string query = $"SELECT Descripcion, Precio FROM Productos WHERE idProducto = {IdProducto}";
+        string query = $"SELECT Descripcion, Precio FROM Productos WHERE idProducto = {Id}";
         Conexion.Open();
         var comman = new SqliteCommand(query, Conexion);
         using (SqliteDataReader reader = comman.ExecuteReader())
@@ -62,10 +62,10 @@ public class ProductoRepository{
         Conexion.Close();
         return producto;
     }
-    public void EliminarProducto(int IdProducto){
+    public void Delete(int Id){
         using var Conexion = new SqliteConnection(cadenaConexion);
         SqliteCommand comman = Conexion.CreateCommand();
-        comman.CommandText = $"DELETE FROM Productos WHERE idProducto = {IdProducto}";
+        comman.CommandText = $"DELETE FROM Productos WHERE idProducto = {Id}";
         Conexion.Open();
         comman.ExecuteNonQuery();
         Conexion.Close();
