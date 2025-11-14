@@ -1,10 +1,11 @@
-
+using EPresupuestosDetalles;
+namespace EPresupuestos;
 public class Presupuestos
 {
-    public int IdPresupuesto{get;private set;}
-    public string? NombreDestinatario{get;private set;}
-    public DateTime FechaCreada{get;private set;}
-    public List<PresupuestosDetalle> Detalle{get;private set;}
+    public int IdPresupuesto{get; set;}
+    public string? NombreDestinatario{get; set;}
+    public DateOnly FechaCreada{get; set;}
+    public List<PresupuestosDetalle> Detalle{get; set;}
 
     public int MontoPresupuesto(){
         int precio = 0;

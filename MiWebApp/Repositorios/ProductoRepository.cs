@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Linq;
 using Microsoft.Data.Sqlite;
+
+using EProductos;
 public class ProductoRepository
 {
     private readonly string cadenaConexion;
@@ -60,7 +62,7 @@ public class ProductoRepository
         Conexion.Close();
         return productos;
     }
-    public Productos DetallesProducto(int IdProducto)
+    public Productos GetById(int IdProducto)
     {
         var producto = new Productos();
         using var Conexion = new SqliteConnection(cadenaConexion);

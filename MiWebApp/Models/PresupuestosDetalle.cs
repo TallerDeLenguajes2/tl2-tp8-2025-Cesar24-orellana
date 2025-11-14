@@ -1,4 +1,5 @@
-
+using ProductosE;
+namespace EPresupuestosDetalles;
 public class PresupuestosDetalle
 
 {

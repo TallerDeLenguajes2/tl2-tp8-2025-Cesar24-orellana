@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MiWebApp.Models;
 //IEnumerable MiWebApp.Models.Productos
 
+using EProductos;
 namespace MiWebApp.Controllers;
 public class ProductosController : Controller
 {
@@ -21,14 +22,14 @@ public class ProductosController : Controller
         return View(productos);
     }
 
-    [HttpGet]
+    [HttpGet]  // Recibe los datos
     public IActionResult Create()
     {
         var producto = new Productos();
         return View(producto);
     }
 
-    [HttpPost]
+    [HttpPost]  // Ejecuta los datos
     public IActionResult Create(Productos producto)
     {
         _producRepo.CreaProducto(producto);
@@ -37,9 +38,28 @@ public class ProductosController : Controller
     [HttpGet]
     public IActionResult Edit(int Id)
     {
-        var producto = _producRepo.DetallesProducto(Id);
+        var producto = _producRepo.GetById(Id);
 
         return View(producto);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(Productos producto){
+        _producRepo.ModificarProducto(producto.IdProducto, producto);
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult Delete(int Id){
+        var producto = _producRepo.GetById(Id);
+        if(producto == null) return NotFound();
+        return View(producto);
+    }
+
+    [HttpPost]
+    public IActionResult Delete(Productos producto){
+        _producRepo.Delete(producto.IdProducto);
+        return RedirectToAction("Index");
     }
 
 }

@@ -1,3 +1,32 @@
-@Models IEnumerable<ClaseMVC.Models.Productos>
+@model IEnumerable<ProductosE.Productos>
 
-<p>Hola</p>
+<section>
+    <header>
+        <h2></h2>
+        <a asp-controller="Productos" asp-action="Create">Crear Nuevo Producto</a>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Precio</th>
+                <th>Descripcion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var producto in Model)
+            {
+                <tr>
+                    <td>@producto.IdProducto</td>
+                    <td>$@producto.Precio</td>
+                    <td>@producto.Descripcion</td>
+                    <td>
+                        <a asp-controller="Productos" asp-action="Edit" asp-route-id="@producto.IdProducto">Modificar</a>
+                        <a asp-controller="Prodcutos" asp-action="Delete" asp-route-id="@producto.IdProducto">Eliminar</a>
+                    </td>
+                </tr>    
+            }
+        </tbody>
+    </table>
+</section>

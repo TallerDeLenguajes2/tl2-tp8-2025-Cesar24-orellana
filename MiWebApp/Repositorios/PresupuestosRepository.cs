@@ -3,6 +3,9 @@ using System.Linq;
 using Microsoft.Data.Sqlite;
 using System.IO;
 
+using EPresupuestosDetalles;
+using EPresupuestos;
+using EProductos;
 public class PresupuestosRepository
 {
     private readonly string ConexionString;
@@ -19,7 +22,7 @@ public class PresupuestosRepository
         Conexion.Open();
         var command = new SqliteCommand(query, Conexion);
         command.Parameters.Add(new SqliteParameter("@NombreDestinatario", presupuesto.NombreDestinatario));
-        command.Parameters.Add(new SqliteParameter("@FechaCreacion", presupuesto.FechaCreacion));
+        command.Parameters.Add(new SqliteParameter("@FechaCreacion", presupuesto.FechaCreada));
         command.ExecuteNonQuery();
         Conexion.Close();
     }
@@ -39,7 +42,7 @@ public class PresupuestosRepository
                 {
                     IdPresupuesto = Convert.ToInt32(reader["idPresupuesto"]),
                     NombreDestinatario = reader["NombreDestinatario"].ToString(),
-                    FechaCreacion = Convert.ToDateTime(reader["FechaCreacion"])
+                    FechaCreada = Convert.ToDateTime(reader["FechaCreacion"])
                 };
                 ListaPresupuestos.Add(presupuesto);
             }
@@ -76,7 +79,7 @@ public class PresupuestosRepository
                 {
                     IdPresupuesto = Convert.ToInt32(reader["idPresupuesto"]),
                     NombreDestinatario = reader["NombreDestinatario"].ToString(),
-                    FechaCreacion = Convert.ToDateTime(reader["FechaCreacion"]),
+                    FechaCreada = Convert.ToDateTime(reader["FechaCreacion"]),
                     Detalle = new List<PresupuestosDetalle>()
                 };
 
