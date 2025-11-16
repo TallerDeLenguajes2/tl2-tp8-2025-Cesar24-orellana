@@ -42,7 +42,7 @@ public class PresupuestosRepository
                 {
                     IdPresupuesto = Convert.ToInt32(reader["idPresupuesto"]),
                     NombreDestinatario = reader["NombreDestinatario"].ToString(),
-                    FechaCreada = Convert.ToDateTime(reader["FechaCreacion"])
+                    FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]))
                 };
                 ListaPresupuestos.Add(presupuesto);
             }
@@ -79,7 +79,7 @@ public class PresupuestosRepository
                 {
                     IdPresupuesto = Convert.ToInt32(reader["idPresupuesto"]),
                     NombreDestinatario = reader["NombreDestinatario"].ToString(),
-                    FechaCreada = Convert.ToDateTime(reader["FechaCreacion"]),
+                    FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"])),
                     Detalle = new List<PresupuestosDetalle>()
                 };
 

@@ -1,4 +1,4 @@
-using ProductosE;
+using EProductos;
 namespace EPresupuestosDetalles;
 public class PresupuestosDetalle
 
