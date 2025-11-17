@@ -30,10 +30,10 @@ public class ProductosController : Controller
     }
 
     [HttpPost]  // Ejecuta los datos
-    public IActionResult Create(Productos producto)
+    public IActionResult CreateOk(Productos producto)
     {
-        _producRepo.CreaProducto(producto);
-        return View(Index);
+        _producRepo.Add(producto);
+        return View(Index());
     }
     [HttpGet]
     public IActionResult Edit(int Id)
@@ -49,14 +49,14 @@ public class ProductosController : Controller
         return RedirectToAction("Index");
     }
 
-    [HttpGet]
+    [HttpGet]  // Recobe los datos
     public IActionResult Delete(int Id){
         var producto = _producRepo.GetById(Id);
         if(producto == null) return NotFound();
         return View(producto);
     }
 
-    [HttpPost]
+    [HttpPost]  // Ejecuta los datos
     public IActionResult Delete(Productos producto){
         _producRepo.Delete(producto.IdProducto);
         return RedirectToAction("Index");

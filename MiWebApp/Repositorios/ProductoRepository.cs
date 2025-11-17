@@ -11,7 +11,7 @@ public class ProductoRepository
         cadenaConexion = "Data Source=db/Tienda.db";
     }
 
-    public void CreaProducto(Productos producto)
+    public void Add(Productos producto)
     {
         string query = "INSERT INTO Productos (Descripcion, Precio) VALUES (@Descripcion, @Precio)";
         using var Conexion = new SqliteConnection(cadenaConexion);
