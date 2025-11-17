@@ -33,7 +33,7 @@ public class ProductosController : Controller
     public IActionResult CreateOk(Productos producto)
     {
         _producRepo.Add(producto);
-        return View(Index());
+        return RedirectToAction("Index");
     }
     [HttpGet]
     public IActionResult Edit(int Id)
