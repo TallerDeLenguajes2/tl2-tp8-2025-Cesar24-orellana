@@ -27,6 +27,20 @@ public class PresupuestosController : Controller
         return View(detalle);
     }
 
+    [HttpGet]
+    public IActionResult Create(int Id)
+    {
+        var presupuesto = new Presupuestos();
+        return View(presupuesto);
+    }
+
+    [HttpPost]
+    public IActionResult CreateOk(Presupuestos presupuesto)
+    {
+        _PresuRepo.Create(presupuesto);
+        return RedirectToAction("Index");
+    }
+
     // [HttpPost]
     // public IActionResult Details(Presupuestos detalle)
     // {

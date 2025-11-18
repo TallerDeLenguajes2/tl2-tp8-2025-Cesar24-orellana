@@ -44,20 +44,23 @@ public class ProductosController : Controller
     }
 
     [HttpPost]
-    public IActionResult Edit(Productos producto){
+    public IActionResult Edit(Productos producto)
+    {
         _producRepo.ModificarProducto(producto.IdProducto, producto);
         return RedirectToAction("Index");
     }
 
     [HttpGet]  // Recobe los datos
-    public IActionResult Delete(int Id){
+    public IActionResult Delete(int Id)
+    {
         var producto = _producRepo.GetById(Id);
-        if(producto == null) return NotFound();
+        if(producto == null) return RedirectToAction("Index");
         return View(producto);
     }
 
     [HttpPost]  // Ejecuta los datos
-    public IActionResult Delete(Productos producto){
+    public IActionResult Delete(Productos producto)
+    {
         _producRepo.Delete(producto.IdProducto);
         return RedirectToAction("Index");
     }
