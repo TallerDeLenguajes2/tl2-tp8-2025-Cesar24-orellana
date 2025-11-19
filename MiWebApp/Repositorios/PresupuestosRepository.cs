@@ -115,11 +115,45 @@ public class PresupuestosRepository
 
     public bool Delete(int Id)
     {
-        string query = "DELETE FROM Presupuesto WHER idPresupuesto = @Id";
+        string query = @"DELETE FROM Presupuesto WHER idPresupuesto = @Id";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
         var comman = new SqliteCommand(query, Conexion);
         comman.Parameters.Add(new SqliteParameter("@Id", Id));
+        int filasAfectadas = comman.ExecuteNonQuery();
+        Conexion.Close();
+        return filasAfectadas > 0;
+    }
+
+    public Presupuestos ObtenerPresupuesto(int Id)
+    {
+        var presupuesto = new Presupuestos();
+        string query = @"SELECT NomreDestinatario, FechaCreacion
+                        FROM Presupuestos
+                        WHERE idPresupuesto = @Id";
+        using var Conexion = new SqliteConnection(ConexionString);
+        Conexion.Open();
+        var comman = new SqliteCommand(query, Conexion);
+            comman.Parameters.AddWithValue("@Id", Id);
+        using(var reader = comman.ExecuteReader())
+        {
+            presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
+            presupuesto.FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]));
+        }
+        if(presupuesto == null) return null;
+        return presupuesto;
+    }
+
+    public bool Modificar(Presupuestos presupuesto)
+    {
+        string query = @"UPDATE Presupuesto SET NombreDestinatario = @nombre, FechaCreacion = @fecha 
+                        WHERE idPresupuesto = @id";
+        using var Conexion = new SqliteConnection(ConexionString);
+        Conexion.Open();
+        var comman = new SqliteCommand(query, Conexion);
+        comman.Parameters.AddWithValue("@nombre", presupuesto.NombreDestinatario);
+        comman.Parameters.AddWithValue("@fecha", presupuesto.FechaCreada);
+        comman.Parameters.AddWithValue("@id", presupuesto.IdPresupuesto);
         int filasAfectadas = comman.ExecuteNonQuery();
         Conexion.Close();
         return filasAfectadas > 0;
