@@ -1,0 +1,26 @@
+@model EPresupuestos.Presupuestos
+
+@{
+    ViewData["Title"] = "Crear Presupuesto";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="CreateOk" method="post">
+    <table>
+        <tr>
+            <td><label asp-for="NombreDestinatario">Nombre del destinatario</label></td>
+            <td><input asp-for="NombreDestinatario" class="form-control" /></td>
+        </tr>
+        <tr>
+            <td><label asp-for="FechaCreada">Fecha de creación</label></td>
+            <td><input asp-for="FechaCreada" type="date" class="form-control" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit" class="btn btn-primary">Crear</button>
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
+            </td>
+        </tr>
+    </table>
+</form>

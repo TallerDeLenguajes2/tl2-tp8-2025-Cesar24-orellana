@@ -1,0 +1,43 @@
+@model EPresupuestos.Presupuestos
+
+@{
+    ViewData["Title"] = "Detalle del Presupuesto";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<section class="mb-3">
+    <h3>Información del Presupuesto</h3>
+    <p><strong>ID:</strong> @Model.IdPresupuesto</p>
+    <p><strong>Nombre del Destinatario:</strong> @Model.NombreDestinatario</p>
+    <p><strong>Fecha de Creación:</strong> @Model.FechaCreada</p>
+    <p><strong>Monto Total:</strong> @Model.MontoPresupuesto()</p>
+    <p><strong>Monto con IVA:</strong> @Model.MontoPresupuestoConIva()</p>
+    <p><strong>Cantidad de Productos:</strong> @Model.CantProductos()</p>
+</section>
+
+<h3>Detalles</h3>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Detalle)
+        {
+            <tr>
+                <td>@item.productos.Descripcion</td>
+                <td>@item.productos.Precio</td>
+                <td>@item.Cantidad</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</nav>

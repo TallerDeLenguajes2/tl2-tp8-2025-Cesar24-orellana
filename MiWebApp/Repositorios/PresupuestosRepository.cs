@@ -102,7 +102,8 @@ public class PresupuestosRepository
 
     public void AddProductoAPresupuestos(int IdProducto, int IdPresupuesto, int cant)
     {
-        string query = "INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) VALUES (@IdPresupuesto, @IdProducto, @cant)";
+        string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) 
+                        VALUES (@IdPresupuesto, @IdProducto, @cant)";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
         var comman = new SqliteCommand(query, Conexion);
@@ -115,7 +116,7 @@ public class PresupuestosRepository
 
     public bool Delete(int Id)
     {
-        string query = @"DELETE FROM Presupuesto WHER idPresupuesto = @Id";
+        string query = @"DELETE FROM Presupuesto WHERE idPresupuesto = @Id";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
         var comman = new SqliteCommand(query, Conexion);
@@ -128,7 +129,7 @@ public class PresupuestosRepository
     public Presupuestos ObtenerPresupuesto(int Id)
     {
         var presupuesto = new Presupuestos();
-        string query = @"SELECT NomreDestinatario, FechaCreacion
+        string query = @"SELECT NombreDestinatario, FechaCreacion
                         FROM Presupuestos
                         WHERE idPresupuesto = @Id";
         using var Conexion = new SqliteConnection(ConexionString);
@@ -137,6 +138,7 @@ public class PresupuestosRepository
             comman.Parameters.AddWithValue("@Id", Id);
         using(var reader = comman.ExecuteReader())
         {
+            presupuesto.IdPresupuesto = Id;
             presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
             presupuesto.FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]));
         }

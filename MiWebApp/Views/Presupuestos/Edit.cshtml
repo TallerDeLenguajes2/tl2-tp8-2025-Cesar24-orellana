@@ -1,0 +1,24 @@
+@model EPresupuestos.Presupuestos
+
+@{
+    ViewData["Title"] = "Editar Presupuesto";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="EditOk" method="post">
+    <input type="hidden" asp-for="IdPresupuesto" />
+
+    <label asp-for="NombreDestinatario">Nombre del destinatario</label>
+    <input asp-for="NombreDestinatario" />
+    <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
+
+    <label asp-for="FechaCreada">Fecha de creación</label>
+    <input asp-for="FechaCreada" type="date" />
+    <span asp-validation-for="FechaCreada" class="text-danger"></span>
+
+    <button type="submit">Guardar</button>
+    <a asp-action="Index">Volver</a>
+</form>
+
+<partial name="_ValidationScriptsPartial" />
