@@ -10,15 +10,15 @@
     <input type="hidden" asp-for="IdPresupuesto" />
 
     <label asp-for="NombreDestinatario">Nombre del destinatario</label>
-    <input asp-for="NombreDestinatario" />
+    <input asp-for="NombreDestinatario" class="form-control" />
     <span asp-validation-for="NombreDestinatario" class="text-danger"></span>
 
     <label asp-for="FechaCreada">Fecha de creación</label>
-    <input asp-for="FechaCreada" type="date" />
+    <input asp-for="FechaCreada" type="date" class="form-control"  />
     <span asp-validation-for="FechaCreada" class="text-danger"></span>
 
-    <button type="submit">Guardar</button>
-    <a asp-action="Index">Volver</a>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </form>
 
 <partial name="_ValidationScriptsPartial" />

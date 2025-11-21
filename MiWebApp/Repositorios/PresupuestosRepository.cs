@@ -102,7 +102,17 @@ public class PresupuestosRepository
 
     public void AddProductoAPresupuestos(int IdProducto, int IdPresupuesto, int cant)
     {
-        string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) 
+    string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad)
+                VALUES (@IdPresupuesto, @IdProducto, @cant)";
+    using var Conexion = new SqliteConnection(ConexionString);
+    Conexion.Open();
+    var command = new SqliteCommand(query, conexion);
+    command.Parameters.AddWithValue("@IdPresupuesto", IdPresupuesto);
+    command.Parameters.AddWithValue("@IdProducto", IdProducto);
+    command.Parameters.AddWithValue("@cant", cant);
+
+    command.ExecuteNonQuery();
+        /* string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) 
                         VALUES (@IdPresupuesto, @IdProducto, @cant)";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
@@ -110,17 +120,17 @@ public class PresupuestosRepository
         comman.Parameters.Add(new SqliteParameter("@IdPresupuesto", IdPresupuesto));
         comman.Parameters.Add(new SqliteParameter("@IdProducto",IdProducto));
         comman.Parameters.Add(new SqliteParameter("@cant",cant));
-        comman.ExecuteNonQuery();
+        comman.ExecuteNonQuery(); */
         Conexion.Close();
     }
 
     public bool Delete(int Id)
     {
-        string query = @"DELETE FROM Presupuesto WHERE idPresupuesto = @Id";
+        string query = @"DELETE FROM Presupuestos WHERE idPresupuesto = @Id";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
-        var comman = new SqliteCommand(query, Conexion);
-        comman.Parameters.Add(new SqliteParameter("@Id", Id));
+        using var comman = new SqliteCommand(query, Conexion);
+        comman.Parameters.AddWithValue("@Id", Id);
         int filasAfectadas = comman.ExecuteNonQuery();
         Conexion.Close();
         return filasAfectadas > 0;
@@ -129,7 +139,7 @@ public class PresupuestosRepository
     public Presupuestos ObtenerPresupuesto(int Id)
     {
         var presupuesto = new Presupuestos();
-        string query = @"SELECT NombreDestinatario, FechaCreacion
+        string query = @"SELECT NombreDestinatario, FechaCreacion 
                         FROM Presupuestos
                         WHERE idPresupuesto = @Id";
         using var Conexion = new SqliteConnection(ConexionString);
@@ -138,9 +148,12 @@ public class PresupuestosRepository
             comman.Parameters.AddWithValue("@Id", Id);
         using(var reader = comman.ExecuteReader())
         {
-            presupuesto.IdPresupuesto = Id;
-            presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
-            presupuesto.FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]));
+            if (reader.Read())   // <<-- Siempre llamar a Read()
+            {
+                presupuesto.IdPresupuesto = Id;
+                presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
+                presupuesto.FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]));
+            }
         }
         if(presupuesto == null) return null;
         return presupuesto;
@@ -148,13 +161,14 @@ public class PresupuestosRepository
 
     public bool Modificar(Presupuestos presupuesto)
     {
-        string query = @"UPDATE Presupuesto SET NombreDestinatario = @nombre, FechaCreacion = @fecha 
+        string query = @"UPDATE Presupuestos SET NombreDestinatario = @nombre, FechaCreacion = @fecha 
                         WHERE idPresupuesto = @id";
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
-        var comman = new SqliteCommand(query, Conexion);
+
+        using var comman = new SqliteCommand(query, Conexion);
         comman.Parameters.AddWithValue("@nombre", presupuesto.NombreDestinatario);
-        comman.Parameters.AddWithValue("@fecha", presupuesto.FechaCreada);
+        comman.Parameters.AddWithValue("@fecha", presupuesto.FechaCreada.ToString("yyyy-MM-dd"));
         comman.Parameters.AddWithValue("@id", presupuesto.IdPresupuesto);
         int filasAfectadas = comman.ExecuteNonQuery();
         Conexion.Close();

@@ -24,6 +24,7 @@ public class PresupuestosController : Controller
     public IActionResult Details(int Id)
     {
         var detalle = _PresuRepo.Detalle(Id);
+        if (detalle == null) return RedirectToAction("Index");
         return View(detalle);
     }
 
