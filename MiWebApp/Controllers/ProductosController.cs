@@ -1,6 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SistemaVentas.Web.ViewModels; // ❗ Nuevo using
+
 using MiWebApp.Models;
+using SistemaVentas.Web.ViewModels;
+// using EProductos;
 //IEnumerable MiWebApp.Models.Productos
 
 using EProductos;
@@ -8,10 +12,12 @@ namespace MiWebApp.Controllers;
 public class ProductosController : Controller
 {
     //private readonly
+    private readonly ILogger<ProductosController> _logger;
     private readonly ProductoRepository _producRepo;
-    public ProductosController()
+    public ProductosController(ILogger<ProductosController> _logger)
     {
         _producRepo = new ProductoRepository();
+        _logger = logger;
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
 
@@ -30,9 +36,16 @@ public class ProductosController : Controller
     }
 
     [HttpPost]  // Ejecuta los datos
-    public IActionResult CreateOk(Productos producto)
+    public IActionResult CreateOk(ProductoViewModel productoMVC)
     {
-        _producRepo.Add(producto);
+        if (!ModelState.IsValid) return View(productoMVC);
+        var NuevoProducto = new Productos
+        {
+            Descripcion = productoMVC.Descripcion,
+            Precio = productoMVC.Precio
+        };
+
+        _producRepo.Add(NuevoProducto);
         return RedirectToAction("Index");
     }
     [HttpGet]
@@ -44,7 +57,7 @@ public class ProductosController : Controller
     }
 
     [HttpPost]
-    public IActionResult Edit(Productos producto)
+    public IActionResult EditOk(Productos producto)
     {
         _producRepo.ModificarProducto(producto.IdProducto, producto);
         return RedirectToAction("Index");
