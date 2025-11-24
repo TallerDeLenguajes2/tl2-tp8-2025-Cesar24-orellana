@@ -24,13 +24,13 @@ public class ProductoRepository
             Conexion.Close();
         
     }
-    public bool ModificarProducto(int IdProducto, Productos producto)
+    public bool Update(Productos producto)
     {
         using var Conexion = new SqliteConnection(cadenaConexion);
         string query = "UPDATE Productos SET Descripcion = @Descripcion, Precio = @Precio WHERE idProducto = @IdProducto";
         Conexion.Open();
         using var comman = new SqliteCommand(query, Conexion);
-        comman.Parameters.Add(new SqliteParameter("@IdProducto", IdProducto));
+        comman.Parameters.Add(new SqliteParameter("@IdProducto", producto.IdProducto));
         comman.Parameters.Add(new SqliteParameter("@Descripcion", producto.Descripcion));
         comman.Parameters.Add(new SqliteParameter("@Precio", producto.Precio));
         //comman.Parameters.AddWithValue("@IdProducto", IdProducto);

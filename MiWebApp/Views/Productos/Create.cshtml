@@ -1,4 +1,5 @@
-@model EProductos.Productos
+@* @model EProductos.Productos *@
+@model SistemaVentas.Web.ViewModels.ProductoViewModel
 
 @{
     ViewData["Title"] = "Crear Producto";
@@ -27,4 +28,7 @@
     </div>
 </form>
 
-<partial name="_ValidationScriptsPartial" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

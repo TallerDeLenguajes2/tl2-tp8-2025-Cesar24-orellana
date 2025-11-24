@@ -4,7 +4,6 @@ using SistemaVentas.Web.ViewModels; // ❗ Nuevo using
 
 using MiWebApp.Models;
 using SistemaVentas.Web.ViewModels;
-// using EProductos;
 //IEnumerable MiWebApp.Models.Productos
 
 using EProductos;
@@ -46,7 +45,7 @@ public class ProductosController : Controller
         };
 
         _producRepo.Add(NuevoProducto);
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
     [HttpGet]
     public IActionResult Edit(int Id)
@@ -57,10 +56,19 @@ public class ProductosController : Controller
     }
 
     [HttpPost]
-    public IActionResult EditOk(Productos producto)
+    public IActionResult EditOk(int Id, ProductoViewModedel productoMVC)
     {
-        _producRepo.ModificarProducto(producto.IdProducto, producto);
-        return RedirectToAction("Index");
+        if(Id != productoMVC.IdProducto) return NotFound();
+
+        if(!ModelState.IsValid) return View(productoMVC);
+        var nuevoPorducto = new Productos
+        {
+            IdProducto = productoMVC.IdProducto,
+            Descripcion = productoMVC.Descripcion,
+            Precio = productoMVC.Precio
+        };
+        _producRepo.ModificarProducto(nuevoPorducto);
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]  // Recobe los datos
