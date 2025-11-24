@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectList
+
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace SistemaVentas.Web.ViewModels
 {
     public class AgregarProductoViewModel
@@ -18,6 +21,7 @@ namespace SistemaVentas.Web.ViewModels
         public int Cantidad { get; set; }
 
         // Propiedad adicional para el Dropdown (no se valida, solo se usa en la Vista)
+        [ValidateNever]
         public SelectList ListaProductos { get; set; }
     }
 }

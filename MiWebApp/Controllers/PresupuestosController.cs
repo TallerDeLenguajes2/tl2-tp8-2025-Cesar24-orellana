@@ -1,16 +1,23 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MiWebApp.Models;
+// - - -
+using SistemaVentas.Web.ViewModels; //Necesario para poder llegar a los ViewModels
+using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectList
 
 using EPresupuestos;
 namespace MiWebApp.Controllers;
 
 public class PresupuestosController : Controller
 {
+    private readonly ILogger<PresupuestosController> _logger;
     private readonly PresupuestosRepository _PresuRepo;
-    public PresupuestosController()
+    private readonly ProductoRepository _ProducRepo;
+    public PresupuestosController(ILogger<PresupuestosController> logger)
     {
+        _logger = logger;
         _PresuRepo = new PresupuestosRepository();
+        _ProducRepo = new ProductoRepository();
     }
 
     [HttpGet]
@@ -68,6 +75,44 @@ public class PresupuestosController : Controller
     {
         _PresuRepo.Delete(presupuesto.IdPresupuesto);
         return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult AgregarProducto(int Id)
+    {
+        // 1. Obtener los productos para el SelectList
+        List<Producto> productos = _ProducRepo.GetAll();
+
+        // 2. Crear el ViewModel
+        AgregarProductoViewModel model = new AgregarProductoViewModel
+        {
+            IdPresupuesto = id, // Pasamos el ID del presupuesto actual
+                                // 3. Crear el SelectList
+            ListaProductos = new SelectList(productos, "IdProducto", "Descripcion")
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult AgregarProducto(AgregarProductoViewModel model)
+    {
+        // 1. Chequeo de Seguridad para la Cantidad
+        if (!ModelState.IsValid)
+        {
+            // LÓGICA CRÍTICA DE RECARGA: Si falla la validación,
+            // debemos recargar el SelectList porque se pierde en el POST.
+            var productos = _productoRepo.GetAll();
+            model.ListaProductos = new SelectList(productos, "IdProducto", "Descripcion");
+
+            // Devolvemos el modelo con los errores y el dropdown recargado
+            return View(model);
+        }
+
+        // 2. Si es VÁLIDO: Llamamos al repositorio para guardar la relación
+        _repo.AddDetalle(model.IdPresupuesto, model.IdProducto, model.Cantidad);
+
+        // 3. Redirigimos al detalle del presupuesto
+        return RedirectToAction(nameof(Details), new { id = model.IdPresupuesto });
     }
 
 }
