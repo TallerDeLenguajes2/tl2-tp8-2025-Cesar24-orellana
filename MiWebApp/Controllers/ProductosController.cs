@@ -1,8 +1,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 // - - -
-using SistemaVentas.Web.Repositorios;
+//using SistemaVentas.Web.Repositorios;
 using SistemaVentas.Web.ViewModels; // ❗ Nuevo using
+using SistemaVentas.Web.ViewModels;
 
 using MiWebApp.Models;
 using SistemaVentas.Web.ViewModels;
@@ -18,7 +19,7 @@ public class ProductosController : Controller
     public ProductosController(ILogger<ProductosController> _logger)
     {
         _producRepo = new ProductoRepository();
-        _logger = logger;
+        _logger = _logger;
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
 
@@ -32,8 +33,8 @@ public class ProductosController : Controller
     [HttpGet]  // Recibe los datos
     public IActionResult Create()
     {
-        var producto = new Productos();
-        return View(producto);
+        var productoVM = new ProductoViewModel();
+        return View(productoVM);
     }
 
     [HttpPost]  // Ejecuta los datos
@@ -43,7 +44,7 @@ public class ProductosController : Controller
         var NuevoProducto = new Productos
         {
             Descripcion = productoMVC.Descripcion,
-            Precio = productoMVC.Precio
+            Precio = Convert.ToInt32(productoMVC.Precio)
         };
 
         _producRepo.Add(NuevoProducto);
@@ -53,12 +54,19 @@ public class ProductosController : Controller
     public IActionResult Edit(int Id)
     {
         var producto = _producRepo.GetById(Id);
+        if(producto == null) return RedirectToAction(nameof(Index));
 
-        return View(producto);
+        var productoVM = new ProductoViewModel
+        {
+            IdProducto = producto.IdProducto,
+            Descripcion = producto.Descripcion,
+            Precio = producto.Precio
+        };
+        return View(productoVM);
     }
 
     [HttpPost]
-    public IActionResult EditOk(int Id, ProductoViewModedel productoMVC)
+    public IActionResult EditOk(int Id, ProductoViewModel productoMVC)
     {
         if(Id != productoMVC.IdProducto) return NotFound();
 
@@ -67,9 +75,9 @@ public class ProductosController : Controller
         {
             IdProducto = productoMVC.IdProducto,
             Descripcion = productoMVC.Descripcion,
-            Precio = productoMVC.Precio
+            Precio = Convert.ToInt32(productoMVC.Precio)
         };
-        _producRepo.ModificarProducto(nuevoPorducto);
+        _producRepo.Update(nuevoPorducto);
         return RedirectToAction(nameof(Index));
     }
 

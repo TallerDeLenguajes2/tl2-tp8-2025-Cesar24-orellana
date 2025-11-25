@@ -5,6 +5,7 @@ using MiWebApp.Models;
 using SistemaVentas.Web.ViewModels; //Necesario para poder llegar a los ViewModels
 using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectList
 
+using EProductos;
 using EPresupuestos;
 namespace MiWebApp.Controllers;
 
@@ -81,12 +82,12 @@ public class PresupuestosController : Controller
     public IActionResult AgregarProducto(int Id)
     {
         // 1. Obtener los productos para el SelectList
-        List<Producto> productos = _ProducRepo.GetAll();
+        List<Productos> productos = _ProducRepo.GetAll();
 
         // 2. Crear el ViewModel
         AgregarProductoViewModel model = new AgregarProductoViewModel
         {
-            IdPresupuesto = id, // Pasamos el ID del presupuesto actual
+            IdPresupuesto = Id, // Pasamos el ID del presupuesto actual
                                 // 3. Crear el SelectList
             ListaProductos = new SelectList(productos, "IdProducto", "Descripcion")
         };
@@ -101,7 +102,7 @@ public class PresupuestosController : Controller
         {
             // LÓGICA CRÍTICA DE RECARGA: Si falla la validación,
             // debemos recargar el SelectList porque se pierde en el POST.
-            var productos = _productoRepo.GetAll();
+            var productos = _ProducRepo.GetAll();
             model.ListaProductos = new SelectList(productos, "IdProducto", "Descripcion");
 
             // Devolvemos el modelo con los errores y el dropdown recargado
@@ -109,7 +110,7 @@ public class PresupuestosController : Controller
         }
 
         // 2. Si es VÁLIDO: Llamamos al repositorio para guardar la relación
-        _repo.AddDetalle(model.IdPresupuesto, model.IdProducto, model.Cantidad);
+        _PresuRepo.AddDetalle(model.IdPresupuesto, model.IdProducto, model.Cantidad);
 
         // 3. Redirigimos al detalle del presupuesto
         return RedirectToAction(nameof(Details), new { id = model.IdPresupuesto });
