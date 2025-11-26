@@ -100,7 +100,7 @@ public class PresupuestosRepository
         return detallePresupuesto;
     }
 
-    public void AddDetalle(int IdProducto, int IdPresupuesto, int cant)
+    public void AddDetalle( int IdPresupuesto, int IdProducto, int cant)
     {
     string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad)
                 VALUES (@IdPresupuesto, @IdProducto, @cant)";

@@ -38,7 +38,7 @@ public class ProductosController : Controller
     }
 
     [HttpPost]  // Ejecuta los datos
-    public IActionResult CreateOk(ProductoViewModel productoMVC)
+    public IActionResult Create(ProductoViewModel productoMVC)
     {
         if (!ModelState.IsValid) return View(productoMVC);
         var NuevoProducto = new Productos
@@ -66,18 +66,18 @@ public class ProductosController : Controller
     }
 
     [HttpPost]
-    public IActionResult EditOk(int Id, ProductoViewModel productoMVC)
+    public IActionResult Edit(int Id, ProductoViewModel productoMVC)
     {
         if(Id != productoMVC.IdProducto) return NotFound();
 
         if(!ModelState.IsValid) return View(productoMVC);
-        var nuevoPorducto = new Productos
+        var productoEdit = new Productos
         {
             IdProducto = productoMVC.IdProducto,
             Descripcion = productoMVC.Descripcion,
             Precio = Convert.ToInt32(productoMVC.Precio)
         };
-        _producRepo.Update(nuevoPorducto);
+        _producRepo.Update(productoEdit);
         return RedirectToAction(nameof(Index));
     }
 
