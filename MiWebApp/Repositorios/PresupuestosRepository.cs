@@ -3,10 +3,11 @@ using System.Linq;
 using Microsoft.Data.Sqlite;
 using System.IO;
 
+using EInterface;
 using EPresupuestosDetalles;
 using EPresupuestos;
 using EProductos;
-public class PresupuestosRepository
+public class PresupuestosRepository : IPresupuestosRepository
 {
     private readonly string ConexionString;
 
