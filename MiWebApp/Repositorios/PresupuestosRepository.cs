@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Data.Sqlite;
 using System.IO;
 
-using EInterface;
+using MVC.Interfaces;
 using EPresupuestosDetalles;
 using EPresupuestos;
 using EProductos;

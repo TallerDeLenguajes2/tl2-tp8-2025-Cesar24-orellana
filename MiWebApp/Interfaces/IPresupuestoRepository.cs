@@ -1,5 +1,5 @@
 using EPresupuestos;
-namespace EInterface
+namespace MVC.Interfaces
 {
     interface IPresupuestosRepository
     {

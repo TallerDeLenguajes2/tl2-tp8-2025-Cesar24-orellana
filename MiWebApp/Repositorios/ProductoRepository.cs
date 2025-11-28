@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Data.Sqlite;
 
 using EProductos;
-using EInterface;
+using MVC.Interfaces;
 public class ProductoRepository : IProductoRepository
 {
     private readonly string cadenaConexion;

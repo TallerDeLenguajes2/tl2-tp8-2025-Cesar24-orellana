@@ -1,5 +1,5 @@
 using EProductos;
-namespace EInterface
+namespace MVC.Interfaces
 {
     interface IProductoRepository
     {
