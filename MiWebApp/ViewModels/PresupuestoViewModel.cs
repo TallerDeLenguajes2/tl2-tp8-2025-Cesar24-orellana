@@ -11,7 +11,7 @@ namespace SistemaVentas.Web.ViewModels
         [Required(ErrorMessage = "El nombre o email es obligatorio.")]
         // Opcional: Se puede añadir la validación de formato de email si se opta por guardar el mail.
         // [EmailAddress(ErrorMessage = "El formato del email no es válido.")]
-        public string NombreDestinatario { get; set; }
+        public string? NombreDestinatario { get; set; }
         
         // Validación: Requerido y tipo de dato
         [Display(Name = "Fecha de Creación")]

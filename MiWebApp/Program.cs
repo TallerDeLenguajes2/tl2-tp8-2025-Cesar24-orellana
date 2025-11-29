@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using MVC.Interfaces;
 using MVC.Repositorios;
-//using MVC.Services;
+using MVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestosRepository, PresupuestosRepository>();
 builder.Services.AddScoped<IUserRepository, UsuarioRepository>();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<MVC.Interfaces.IAuthenticationService,AuthenticationService>();
 // ... (Otros servicios y configuración MVC) ...
 
 var app = builder.Build();
