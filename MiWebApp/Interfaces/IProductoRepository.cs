@@ -1,7 +1,7 @@
 using EProductos;
 namespace MVC.Interfaces
 {
-    interface IProductoRepository
+    public interface IProductoRepository
     {
         public void Add(Productos producto);
         public bool Update(Productos producto);

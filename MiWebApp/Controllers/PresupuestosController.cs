@@ -7,38 +7,65 @@ using Microsoft.AspNetCore.Mvc.Rendering; // Necesario para SelectList
 
 using EProductos;
 using EPresupuestos;
+using MVC.Interfaces;
 namespace MiWebApp.Controllers;
 
 public class PresupuestosController : Controller
 {
     private readonly ILogger<PresupuestosController> _logger;
-    private readonly PresupuestosRepository _PresuRepo;
-    private readonly ProductoRepository _ProducRepo;
-    public PresupuestosController(ILogger<PresupuestosController> logger)
+    private readonly IPresupuestosRepository _PresuRepo;
+    private readonly IProductoRepository _ProducRepo;
+    private readonly IAuthenticationService _authService;
+    public PresupuestosController(ILogger<PresupuestosController> logger, IPresupuestosRepository presuRepo, IProductoRepository ProducRepo, IAuthenticationService authService)
     {
         _logger = logger;
-        _PresuRepo = new PresupuestosRepository();
-        _ProducRepo = new ProductoRepository();
+        _PresuRepo = presuRepo;
+        _ProducRepo = ProducRepo;
+        _authService = authService;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        var presupuestos = _PresuRepo.GetAll();
-        return View(presupuestos);
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        if (_authService.HasAccessLevel("Administrador") || _authService.HasAccessLevel("Cliente"))
+        {
+            var presupuestos = _PresuRepo.GetAll();
+            return View(presupuestos);
+        }
+        else
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
     }
 
     [HttpGet]
     public IActionResult Details(int Id)
     {
-        var detalle = _PresuRepo.Detalle(Id);
-        if (detalle == null) return RedirectToAction("Index");
-        return View(detalle);
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+
+        if (_authService.HasAccessLevel("Administrador") || _authService.HasAccessLevel("Cliente"))
+        {
+            var detalle = _PresuRepo.Detalle(Id);
+            if (detalle == null) return RedirectToAction("Index");
+            return View(detalle);
+        }
+        else
+        {
+            return RedirectToAction("Index", "Login");
+        }
     }
 
     [HttpGet]
     public IActionResult Create(int Id)
     {
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        var check = CheckAdminPermissions();
+        if (check != null) return check;
+
         var presupuesto = new Presupuestos();
         return View(presupuesto);
     }
@@ -53,6 +80,11 @@ public class PresupuestosController : Controller
     [HttpGet]
     public IActionResult Edit(int Id)
     {
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        var check = CheckAdminPermissions();
+        if (check != null) return check;
+
         var presupuesto = _PresuRepo.ObtenerPresupuesto(Id);
         return View(presupuesto);
     }
@@ -67,6 +99,11 @@ public class PresupuestosController : Controller
     [HttpGet]
     public IActionResult Delete(int Id)
     {
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        var check = CheckAdminPermissions();
+        if (check != null) return check;
+
         var presupuesto = _PresuRepo.ObtenerPresupuesto(Id);
         return View(presupuesto);
     }
@@ -81,6 +118,11 @@ public class PresupuestosController : Controller
     [HttpGet]
     public IActionResult AgregarProducto(int Id)
     {
+        // Comprobación de si está logueado
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        var check = CheckAdminPermissions();
+        if (check != null) return check;
+
         // 1. Obtener los productos para el SelectList
         List<Productos> productos = _ProducRepo.GetAll();
 
@@ -116,6 +158,30 @@ public class PresupuestosController : Controller
         return RedirectToAction(nameof(Details), new { id = model.IdPresupuesto });
     }
 
-    public IActionResult AccesoDenegado(){}
+
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public IActionResult CheckAdminPermissions()
+    {
+        // 1 No Logueado? -> Vuelve al login
+        if (_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+
+        // 2 No es Admin -> Da Error
+        // Llamamos a AccesoDenegado (Vista correspondiente de Producto)
+        if (!_authService.HasAccessLevel("Administrador")) return RedirectToAction(nameof(AccesoDenegado));
+
+        // Logueo con Admin (Rango necesario)
+        return null;
+    }
+
+    public IActionResult AccesoDenegado()
+    {
+        // Logueado pero con rango insuficiente
+        return View();
+    }
 
 }

@@ -40,6 +40,9 @@ public class ProductosController : Controller
     [HttpGet]  // Recibe los datos
     public IActionResult Create()
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+
         var productoVM = new ProductoViewModel();
         return View(productoVM);
     }
@@ -60,6 +63,9 @@ public class ProductosController : Controller
     [HttpGet]
     public IActionResult Edit(int Id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+        
         var producto = _producRepo.GetById(Id);
         if(producto == null) return RedirectToAction(nameof(Index));
 
@@ -91,6 +97,9 @@ public class ProductosController : Controller
     [HttpGet]  // Recobe los datos
     public IActionResult Delete(int Id)
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+        
         var producto = _producRepo.GetById(Id);
         if(producto == null) return RedirectToAction("Index");
         return View(producto);

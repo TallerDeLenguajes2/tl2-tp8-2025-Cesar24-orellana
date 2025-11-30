@@ -1,7 +1,7 @@
 using EPresupuestos;
 namespace MVC.Interfaces
 {
-    interface IPresupuestosRepository
+    public interface IPresupuestosRepository
     {
         public void Create(Presupuestos presupuesto);
         public List<Presupuestos> GetAll();
