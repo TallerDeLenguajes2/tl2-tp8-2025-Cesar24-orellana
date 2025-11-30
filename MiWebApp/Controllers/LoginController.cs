@@ -9,12 +9,14 @@ public class LoginController : Controller
     {
         _authenticationService = authenticationService;
     }
+    
     [HttpGet] //Muestra la vista de login
     public IActionResult Index()
     {
         // ... (Crear LoginViewModel)
         return View(new LoginViewModel());
     }
+
     //[HttpPost] //Procesa el login
     [HttpPost]
     public IActionResult Login(LoginViewModel model)
@@ -31,6 +33,7 @@ public class LoginController : Controller
         model.ErrorMessage = "Credenciales inválidas.";
         return View("Index", model);
     }
+
     [HttpGet] //Cierra sesión
     public IActionResult Logout()
     {

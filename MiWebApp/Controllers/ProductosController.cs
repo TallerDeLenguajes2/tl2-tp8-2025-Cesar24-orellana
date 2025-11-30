@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 // - - -
 //using SistemaVentas.Web.Repositorios;
 using SistemaVentas.Web.ViewModels; // ❗ Nuevo using
-using SistemaVentas.Web.ViewModels;
 
+using MVC.Interfaces;
+using MVC.Services;
 using MiWebApp.Models;
-using SistemaVentas.Web.ViewModels;
 //IEnumerable MiWebApp.Models.Productos
 
 using EProductos;
@@ -14,18 +14,25 @@ namespace MiWebApp.Controllers;
 public class ProductosController : Controller
 {
     //private readonly
+
     private readonly ILogger<ProductosController> _logger;
-    private readonly ProductoRepository _producRepo;
-    public ProductosController(ILogger<ProductosController> _logger)
+    private readonly IProductoRepository _producRepo;
+    private readonly IAuthenticationService _authService;
+
+    public ProductosController(ILogger<ProductosController> logger, IProductoRepository ProduRepo, IAuthenticationService authService)
     {
-        _producRepo = new ProductoRepository();
-        _logger = _logger;
+        _logger = logger;
+        _producRepo = ProduRepo;
+        _authService = authService;
     }
     //A partir de aquí van todos los Action Methods (Get, Post,etc.)
 
     [HttpGet]
     public IActionResult Index()
     {
+        var securityCheck = CheckAdminPermissions();
+        if (securityCheck != null) return securityCheck;
+
         List<Productos> productos = _producRepo.GetAll();
         return View(productos);
     }
@@ -96,4 +103,27 @@ public class ProductosController : Controller
         return RedirectToAction("Index");
     }
 
+    [ResponseCache(Duration = 0,  Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error(){
+        return View(new ErrorViewModel{RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+
+    public IActionResult CheckAdminPermissions()
+    {
+        // 1 No Logueado? -> Vuelve al login
+        if(_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+
+        // 2 No es Admin -> Da Error
+        // Llamamos a AccesoDenegado (Vista correspondiente de Producto)
+        if(!_authService.HasAccessLevel("Administrador")) return RedirectToAction(nameof(AccesoDenegado));
+
+        // Logueo con Admin (Rango necesario)
+        return null;
+    }
+
+    public IActionResult AccesoDenegado()
+    {
+        // Logueado pero con rango insuficiente
+        return View();
+    }
 }

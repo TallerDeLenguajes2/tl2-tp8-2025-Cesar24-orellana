@@ -116,4 +116,6 @@ public class PresupuestosController : Controller
         return RedirectToAction(nameof(Details), new { id = model.IdPresupuesto });
     }
 
+    public IActionResult AccesoDenegado(){}
+
 }

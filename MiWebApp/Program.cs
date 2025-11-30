@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using MVC.Interfaces;
 using MVC.Repositorios;
 using MVC.Services;
-
+using AuthenticationService = MVC.Services.AuthenticationService;  // Recomendado por VsCode (Ctrl + .)
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
