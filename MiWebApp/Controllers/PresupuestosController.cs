@@ -168,7 +168,7 @@ public class PresupuestosController : Controller
     public IActionResult CheckAdminPermissions()
     {
         // 1 No Logueado? -> Vuelve al login
-        if (_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
 
         // 2 No es Admin -> Da Error
         // Llamamos a AccesoDenegado (Vista correspondiente de Producto)

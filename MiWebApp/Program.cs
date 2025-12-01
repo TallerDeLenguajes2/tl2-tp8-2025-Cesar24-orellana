@@ -4,26 +4,30 @@ using MVC.Interfaces;
 using MVC.Repositorios;
 using MVC.Services;
 using AuthenticationService = MVC.Services.AuthenticationService;  // Recomendado por VsCode (Ctrl + .)
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 
 // Servicios de Sesión y Acceso a Contexto (CLAVE para la autenticación)
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 // Registro de la Inyección de Dependencia (TODOS AddScoped)
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestosRepository, PresupuestosRepository>();
 builder.Services.AddScoped<IUserRepository, UsuarioRepository>();
 builder.Services.AddScoped<MVC.Interfaces.IAuthenticationService,AuthenticationService>();
 // ... (Otros servicios y configuración MVC) ...
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
 
 var app = builder.Build();
 
