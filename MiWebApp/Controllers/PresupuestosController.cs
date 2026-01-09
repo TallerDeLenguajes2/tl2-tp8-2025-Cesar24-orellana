@@ -173,7 +173,6 @@ public class PresupuestosController : Controller
         // 2 No es Admin -> Da Error
         // Llamamos a AccesoDenegado (Vista correspondiente de Producto)
         if (!_authService.HasAccessLevel("Administrador")) return RedirectToAction(nameof(AccesoDenegado));
-
         // Logueo con Admin (Rango necesario)
         return null;
     }

@@ -4,12 +4,14 @@ using MVC.Interfaces;
 using SistemaVentas.Web.ViewModels; //Necesario para poder llegar a los ViewModels
 public class LoginController : Controller
 {
+    private readonly ILogger<LoginController> _logger;
     private readonly IAuthenticationService _authenticationService;
-    public LoginController(IAuthenticationService authenticationService)
+    public LoginController(ILogger<LoginController> logger, IAuthenticationService authenticationService)
     {
+        _logger = logger;
         _authenticationService = authenticationService;
     }
-    
+
     [HttpGet] //Muestra la vista de login
     public IActionResult Index()
     {
@@ -26,11 +28,23 @@ public class LoginController : Controller
             model.ErrorMessage = "Debe ingresar usuario y contraseña.";
             return View("Index", model);
         }
-        if (_authenticationService.Login(model.Username, model.Password))
+
+        try
         {
-            return RedirectToAction("Index", "Home");
+            if (_authenticationService.Login(model.Username, model.Password))
+            {
+                _logger.LogInformation($"El Usuario: {model.Username} ingreso correctamente");
+                return RedirectToAction("Index", "Home");
+            }
         }
-        model.ErrorMessage = "Credenciales inválidas.";
+        catch (Exception ex)
+        {
+            model.ErrorMessage = "Credenciales inválidas.";
+            //return View("Index", model);
+            _logger.LogWarning($"Intento de acceso invalido + Usuario: {model.Username} + Clave ingresada: {model.Password}");
+            throw;
+
+        }
         return View("Index", model);
     }
 
