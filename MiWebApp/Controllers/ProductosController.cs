@@ -11,6 +11,7 @@ using MiWebApp.Models;
 
 using EProductos;
 namespace MiWebApp.Controllers;
+
 public class ProductosController : Controller
 {
     //private readonly
@@ -50,24 +51,33 @@ public class ProductosController : Controller
     [HttpPost]  // Ejecuta los datos
     public IActionResult Create(ProductoViewModel productoMVC)
     {
-        if (!ModelState.IsValid) return View(productoMVC);
-        var NuevoProducto = new Productos
+        try
         {
-            Descripcion = productoMVC.Descripcion,
-            Precio = Convert.ToInt32(productoMVC.Precio)
-        };
+            if (!ModelState.IsValid) return View(productoMVC);
+            var NuevoProducto = new Productos
+            {
+                Descripcion = productoMVC.Descripcion,
+                Precio = Convert.ToInt32(productoMVC.Precio)
+            };
 
-        _producRepo.Add(NuevoProducto);
-        return RedirectToAction(nameof(Index));
+            _producRepo.Add(NuevoProducto);
+            return RedirectToAction(nameof(Index));
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return BadRequest();
+        }
     }
     [HttpGet]
     public IActionResult Edit(int Id)
     {
         var securityCheck = CheckAdminPermissions();
         if (securityCheck != null) return securityCheck;
-        
+
         var producto = _producRepo.GetById(Id);
-        if(producto == null) return RedirectToAction(nameof(Index));
+        if (producto == null) return RedirectToAction(nameof(Index));
 
         var productoVM = new ProductoViewModel
         {
@@ -81,17 +91,26 @@ public class ProductosController : Controller
     [HttpPost]
     public IActionResult Edit(int Id, ProductoViewModel productoMVC)
     {
-        if(Id != productoMVC.IdProducto) return NotFound();
-
-        if(!ModelState.IsValid) return View(productoMVC);
-        var productoEdit = new Productos
+        try
         {
-            IdProducto = productoMVC.IdProducto,
-            Descripcion = productoMVC.Descripcion,
-            Precio = Convert.ToInt32(productoMVC.Precio)
-        };
-        _producRepo.Update(productoEdit);
-        return RedirectToAction(nameof(Index));
+            if (Id != productoMVC.IdProducto) return NotFound();
+
+            if (!ModelState.IsValid) return View(productoMVC);
+            var productoEdit = new Productos
+            {
+                IdProducto = productoMVC.IdProducto,
+                Descripcion = productoMVC.Descripcion,
+                Precio = Convert.ToInt32(productoMVC.Precio)
+            };
+            _producRepo.Update(productoEdit);
+            return RedirectToAction(nameof(Index));
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return BadRequest();
+        }
     }
 
     [HttpGet]  // Recobe los datos
@@ -99,32 +118,42 @@ public class ProductosController : Controller
     {
         var securityCheck = CheckAdminPermissions();
         if (securityCheck != null) return securityCheck;
-        
+
         var producto = _producRepo.GetById(Id);
-        if(producto == null) return RedirectToAction("Index");
+        if (producto == null) return RedirectToAction("Index");
         return View(producto);
     }
 
     [HttpPost]  // Ejecuta los datos
     public IActionResult Delete(Productos producto)
     {
+        try
+        {
         _producRepo.Delete(producto.IdProducto);
         return RedirectToAction("Index");
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return BadRequest();
+        }
     }
 
-    [ResponseCache(Duration = 0,  Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error(){
-        return View(new ErrorViewModel{RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
     public IActionResult CheckAdminPermissions()
     {
         // 1 No Logueado? -> Vuelve al login
-        if(!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
+        if (!_authService.IsAuthenticated()) return RedirectToAction("Index", "Login");
 
         // 2 No es Admin -> Da Error
         // Llamamos a AccesoDenegado (Vista correspondiente de Producto)
-        if(!_authService.HasAccessLevel("Administrador")) return RedirectToAction(nameof(AccesoDenegado));
+        if (!_authService.HasAccessLevel("Administrador")) return RedirectToAction(nameof(AccesoDenegado));
 
         // Logueo con Admin (Rango necesario)
         return null;

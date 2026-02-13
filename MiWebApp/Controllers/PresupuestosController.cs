@@ -73,8 +73,17 @@ public class PresupuestosController : Controller
     [HttpPost]
     public IActionResult CreateOk(Presupuestos presupuesto)
     {
+        try
+        {
         _PresuRepo.Create(presupuesto);
         return RedirectToAction("Index");
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return BadRequest();
+        }
     }
 
     [HttpGet]
@@ -92,8 +101,17 @@ public class PresupuestosController : Controller
     [HttpPost]
     public IActionResult EditOk(Presupuestos presupuesto)
     {
+        try
+        {
         _PresuRepo.Modificar(presupuesto);
         return RedirectToAction("Index");
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return BadRequest();
+        }
     }
 
     [HttpGet]
