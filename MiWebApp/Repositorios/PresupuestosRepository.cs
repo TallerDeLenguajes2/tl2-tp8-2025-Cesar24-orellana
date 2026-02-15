@@ -24,8 +24,8 @@ public class PresupuestosRepository : IPresupuestosRepository
         var command = new SqliteCommand(query, Conexion);
         command.Parameters.Add(new SqliteParameter("@NombreDestinatario", presupuesto.NombreDestinatario));
         command.Parameters.Add(new SqliteParameter("@FechaCreacion", presupuesto.FechaCreada));
-        command.ExecuteNonQuery();
-        Conexion.Close();
+        int filasAfectadas = command.ExecuteNonQuery();
+        if (filasAfectadas == 0) throw new Exception("No se pudo crear un Presupuesto");
     }
 
     public List<Presupuestos> GetAll()
@@ -48,7 +48,7 @@ public class PresupuestosRepository : IPresupuestosRepository
                 ListaPresupuestos.Add(presupuesto);
             }
         }
-
+        if (ListaPresupuestos.Count == 0) throw new Exception("Lista presupuestos vacia");
         return ListaPresupuestos;
     }
 
@@ -98,21 +98,22 @@ public class PresupuestosRepository : IPresupuestosRepository
                 detallePresupuesto.Detalle.Add(detalle);
             }
         }
+        if(detallePresupuesto == null) throw new Exception($"No se encontro un presupuesto de ID: {Id}");
         return detallePresupuesto;
     }
 
-    public void AddDetalle( int IdPresupuesto, int IdProducto, int cant)
+    public void AddDetalle(int IdPresupuesto, int IdProducto, int cant)
     {
-    string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad)
+        string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad)
                 VALUES (@IdPresupuesto, @IdProducto, @cant)";
-    using var Conexion = new SqliteConnection(ConexionString);
-    Conexion.Open();
-    var command = new SqliteCommand(query, Conexion);
-    command.Parameters.AddWithValue("@IdPresupuesto", IdPresupuesto);
-    command.Parameters.AddWithValue("@IdProducto", IdProducto);
-    command.Parameters.AddWithValue("@cant", cant);
+        using var Conexion = new SqliteConnection(ConexionString);
+        Conexion.Open();
+        var command = new SqliteCommand(query, Conexion);
+        command.Parameters.AddWithValue("@IdPresupuesto", IdPresupuesto);
+        command.Parameters.AddWithValue("@IdProducto", IdProducto);
+        command.Parameters.AddWithValue("@cant", cant);
 
-    command.ExecuteNonQuery();
+        int filasAfectadas = command.ExecuteNonQuery();
         /* string query = @"INSERT INTO PresupuestosDetalle (idPresupuesto, idProducto, Cantidad) 
                         VALUES (@IdPresupuesto, @IdProducto, @cant)";
         using var Conexion = new SqliteConnection(ConexionString);
@@ -122,7 +123,7 @@ public class PresupuestosRepository : IPresupuestosRepository
         comman.Parameters.Add(new SqliteParameter("@IdProducto",IdProducto));
         comman.Parameters.Add(new SqliteParameter("@cant",cant));
         comman.ExecuteNonQuery(); */
-        Conexion.Close();
+        if (filasAfectadas == 0) throw new Exception("No se pudo crear un nuevo presupuesto");
     }
 
     public bool Delete(int Id)
@@ -133,7 +134,7 @@ public class PresupuestosRepository : IPresupuestosRepository
         using var comman = new SqliteCommand(query, Conexion);
         comman.Parameters.AddWithValue("@Id", Id);
         int filasAfectadas = comman.ExecuteNonQuery();
-        Conexion.Close();
+        if (filasAfectadas == 0) throw new Exception($"No se pudo eliminar el presupuesto de ID: {Id}");
         return filasAfectadas > 0;
     }
 
@@ -146,18 +147,20 @@ public class PresupuestosRepository : IPresupuestosRepository
         using var Conexion = new SqliteConnection(ConexionString);
         Conexion.Open();
         var comman = new SqliteCommand(query, Conexion);
-            comman.Parameters.AddWithValue("@Id", Id);
-        using(var reader = comman.ExecuteReader())
+        comman.Parameters.AddWithValue("@Id", Id);
+        using (var reader = comman.ExecuteReader())
         {
             if (reader.Read())   // <<-- Siempre llamar a Read()
             {
-                presupuesto.IdPresupuesto = Id;
-                presupuesto.NombreDestinatario = reader["NombreDestinatario"].ToString();
-                presupuesto.FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]));
+                return new Presupuestos
+                {
+                    IdPresupuesto = Id,
+                    NombreDestinatario = reader["NombreDestinatario"].ToString(),
+                    FechaCreada = DateOnly.FromDateTime(Convert.ToDateTime(reader["FechaCreacion"]))
+                };
             }
         }
-        if(presupuesto == null) return null;
-        return presupuesto;
+        throw new Exception($"El prespuesto de ID: {Id} no fue encontrado");
     }
 
     public bool Modificar(Presupuestos presupuesto)
@@ -172,8 +175,7 @@ public class PresupuestosRepository : IPresupuestosRepository
         comman.Parameters.AddWithValue("@fecha", presupuesto.FechaCreada.ToString("yyyy-MM-dd"));
         comman.Parameters.AddWithValue("@id", presupuesto.IdPresupuesto);
         int filasAfectadas = comman.ExecuteNonQuery();
-        Conexion.Close();
-        return filasAfectadas > 0;
+        if(filasAfectadas == 0) throw new Exception($"No se pudo modificar el presupuesto de ID: {presupuesto.IdPresupuesto}");        return filasAfectadas > 0;
     }
 
 
