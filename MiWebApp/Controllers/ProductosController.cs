@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 // - - -
-//using SistemaVentas.Web.Repositorios;
 using SistemaVentas.Web.ViewModels; // ❗ Nuevo using
 
 using MVC.Interfaces;
@@ -66,6 +65,10 @@ public class ProductosController : Controller
         }
         catch (Exception ex)
         {
+            /* var mensaje = "Error Mensaje: " + ex.Message;
+            if(ex.InnerException != null) mensaje = mensaje + " Inner exeption: " + ex.InnerException.Message;
+            mensaje = mensaje + "Stack trace: " + ex.StackTrace;
+            _logger.LogError(mensaje); */
             _logger.LogError(ex.ToString());
             return BadRequest();
         }

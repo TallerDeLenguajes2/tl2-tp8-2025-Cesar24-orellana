@@ -8,7 +8,8 @@ public class ProductoRepository : IProductoRepository
 {
     private readonly string cadenaConexion;
 
-    public ProductoRepository(){
+    public ProductoRepository()
+    {
         cadenaConexion = "Data Source=db/Tienda.db";
     }
 
@@ -16,14 +17,13 @@ public class ProductoRepository : IProductoRepository
     {
         string query = "INSERT INTO Productos (Descripcion, Precio) VALUES (@Descripcion, @Precio)";
         using var Conexion = new SqliteConnection(cadenaConexion);
-        
-            Conexion.Open();
-            var command = new SqliteCommand(query, Conexion);
-            command.Parameters.Add(new SqliteParameter("@Descripcion", producto.Descripcion));
-            command.Parameters.Add(new SqliteParameter("@Precio", producto.Precio));
-            command.ExecuteNonQuery();
-            Conexion.Close();
-        
+
+        Conexion.Open();
+        var command = new SqliteCommand(query, Conexion);
+        command.Parameters.Add(new SqliteParameter("@Descripcion", producto.Descripcion));
+        command.Parameters.Add(new SqliteParameter("@Precio", producto.Precio));
+        int filasAfectadas = command.ExecuteNonQuery();
+        if(filasAfectadas == 0) throw new Exception("No fue posible agregar el producto");
     }
     public bool Update(Productos producto)
     {
@@ -38,7 +38,7 @@ public class ProductoRepository : IProductoRepository
         // comman.Parameters.AddWithValue("@Descripcion", producto.Descripcion);
         // comman.Parameters.AddWithValue("@Precio", producto.Precio);
         int filasAfectadas = comman.ExecuteNonQuery();
-        Conexion.Close();
+        if(filasAfectadas == 0) throw new Exception($"Error al actualizar el producto de ID: {producto.IdProducto}");
         return filasAfectadas > 0;
     }
     public List<Productos> GetAll()
@@ -60,12 +60,13 @@ public class ProductoRepository : IProductoRepository
                 productos.Add(producto);
             }
         }
-        Conexion.Close();
+        if(productos.Count == 0) throw new Exception("Lista producto vacia"); 
         return productos;
     }
     public Productos GetById(int IdProducto)
     {
-        var producto = new Productos();
+
+        
         using var Conexion = new SqliteConnection(cadenaConexion);
         string query = "SELECT Descripcion, Precio FROM Productos WHERE idProducto = @IdProducto";
         Conexion.Open();
@@ -75,13 +76,16 @@ public class ProductoRepository : IProductoRepository
 
         if (reader.Read())
         {
-            producto.IdProducto = IdProducto;
-            producto.Descripcion = reader["Descripcion"].ToString();
-            producto.Precio = Convert.ToInt32(reader["Precio"]);
-            Conexion.Close();
-            return producto;
+            return new Productos
+            {
+                IdProducto = IdProducto,
+                Descripcion = reader["Descripcion"].ToString(),
+                Precio = Convert.ToInt32(reader["Precio"])
+            };
+            //Conexion.Close();
         }
-        return null;
+        throw new Exception("Producto Inexistenete.");
+        //return null;
     }
     public bool Delete(int IdProducto)
     {
@@ -104,13 +108,14 @@ public class ProductoRepository : IProductoRepository
             comman.Parameters.AddWithValue("@IdProducto", IdProducto);
             int filasAfectadas = comman.ExecuteNonQuery();
             transaccion.Commit();
-            Conexion.Close();
+            if(filasAfectadas == 0) throw new Exception($"No se pudo eliminar el producto de ID: {IdProducto}");
             return filasAfectadas > 0;
         }
         catch (Exception ex)
         {
             transaccion.Rollback();
-            return false;
+            //return false;
+            throw new Exception($"No se pudo eliminar el producto con ID {IdProducto}.", ex);
         }
     }
 }
