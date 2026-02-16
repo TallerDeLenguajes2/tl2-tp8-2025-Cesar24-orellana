@@ -7,6 +7,12 @@ using AuthenticationService = MVC.Services.AuthenticationService;  // Recomendad
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+//  - - - - NUEVO   
+var CadenaDeConexion = builder.Configuration.GetConnectionString("SqliteConexion")!.ToString();
+    builder.Services.AddSingleton<string>(CadenaDeConexion);
+
 
 
 // Servicios de Sesión y Acceso a Contexto (CLAVE para la autenticación)
@@ -25,8 +31,6 @@ builder.Services.AddScoped<IUserRepository, UsuarioRepository>();
 builder.Services.AddScoped<MVC.Interfaces.IAuthenticationService,AuthenticationService>();
 // ... (Otros servicios y configuración MVC) ...
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
 
 
 var app = builder.Build();

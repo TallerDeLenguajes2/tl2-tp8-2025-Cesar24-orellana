@@ -8,9 +8,9 @@ public class ProductoRepository : IProductoRepository
 {
     private readonly string cadenaConexion;
 
-    public ProductoRepository()
+    public ProductoRepository(string CadenaConexion)
     {
-        cadenaConexion = "Data Source=db/Tienda.db";
+        cadenaConexion = CadenaConexion;
     }
 
     public void Add(Productos producto)

@@ -11,9 +11,9 @@ public class PresupuestosRepository : IPresupuestosRepository
 {
     private readonly string ConexionString;
 
-    public PresupuestosRepository()
+    public PresupuestosRepository(string conexionString)
     {
-        ConexionString = "Data Source=db/Tienda.db";
+        ConexionString = conexionString;
     }
 
     public void Create(Presupuestos presupuesto)
